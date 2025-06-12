@@ -51,27 +51,43 @@ A comprehensive resume parser that extracts structured information from PDF, DOC
 
 ### 1. Clone and Setup
 ```bash
-git clone https://github.com/sahit1011/AI_Resume_Parser.git
-cd AI_Resume_Parser/navtech-assignment
+git clone https://github.com/sahit1011/Navtech_assignement_resume_parser.git
+cd Navtech_assignement_resume_parser/navtech-assignment
 pip install -r requirements.txt
 ```
 
-### 2. Configure API Keys
+### 2. API Keys Ready! 🔑
 ```bash
-# Copy the example environment file
-cp .env.example .env
-
-# Edit .env with your API keys (or use the provided working keys in .env.example)
+# ✅ NO SETUP NEEDED! Working API keys are already included in .env file
+# The .env file contains working OpenRouter API keys for immediate testing
+# Just run the application directly!
 ```
 
 ### 3. Run the Application
 ```bash
 # Web Interface (Recommended)
 python app.py
-# Then visit: http://localhost:5000
+# Then visit: http://localhost:8080
 
 # Or Command Line
-python src/main.py sample_resumes/sample_resume.txt --provider smart_transformer
+python src/main.py sample_resumes/sample_resume.txt --provider openrouter
+```
+
+### 🎯 For Recruiters - Immediate Testing
+```bash
+# 1. Clone the repo
+git clone https://github.com/sahit1011/Navtech_assignement_resume_parser.git
+cd Navtech_assignement_resume_parser/navtech-assignment
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Run web app (API keys already configured!)
+python app.py
+
+# 4. Open browser: http://localhost:8080
+# 5. Upload any resume and select "OpenRouter (DeepSeek R1)" provider
+# 6. See structured JSON output instantly!
 ```
 
 ## Installation
