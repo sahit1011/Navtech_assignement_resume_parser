@@ -70,8 +70,7 @@ class EnhancedTransformerProvider(BaseLLMProvider):
     def extract_resume_data(self, resume_text: str, pdf_path: str = None) -> ResumeData:
         """Extract structured data from resume using Enhanced Transformer V2"""
         if not self.is_available():
-            self.logger.error("Enhanced Transformer V2 models not available")
-            return self._get_fallback_data(resume_text)
+            raise ValueError("Enhanced Transformer V2 models not available. Please check if the required transformer models can be loaded.")
         
         try:
             # Use improved PDF extraction if available
@@ -103,7 +102,7 @@ class EnhancedTransformerProvider(BaseLLMProvider):
         
         except Exception as e:
             self.logger.error(f"Enhanced Transformer V2 extraction failed: {e}")
-            return self._get_fallback_data(resume_text)
+            raise ValueError(f"Enhanced Transformer V2 processing error: {str(e)}")
     
     def _extract_entities(self, text: str) -> List[Dict]:
         """Extract entities using NER pipeline"""

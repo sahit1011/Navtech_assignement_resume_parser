@@ -76,8 +76,7 @@ class ImprovedLayoutLMProvider(BaseLLMProvider):
     def extract_resume_data(self, resume_text: str, pdf_path: str = None) -> ResumeData:
         """Extract structured data from resume using enhanced V2 processing"""
         if not self.is_available():
-            self.logger.error("Enhanced LayoutLM V2 transformer models not available")
-            return self._get_fallback_data(resume_text)
+            raise ValueError("Enhanced LayoutLM V2 transformer models not available. Please check if the required transformer models can be loaded.")
         
         try:
             # If we have the PDF path, use improved extraction
@@ -112,7 +111,7 @@ class ImprovedLayoutLMProvider(BaseLLMProvider):
         
         except Exception as e:
             self.logger.error(f"Enhanced LayoutLM V2 extraction failed: {e}")
-            return self._get_fallback_data(resume_text)
+            raise ValueError(f"Enhanced LayoutLM V2 processing error: {str(e)}")
     
     def _extract_entities(self, text: str) -> List[Dict]:
         """Extract entities using NER pipeline with improved chunking"""

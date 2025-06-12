@@ -49,8 +49,7 @@ class OpenAILLMProvider(BaseLLMProvider):
     def extract_resume_data(self, resume_text: str, pdf_path: str = None) -> ResumeData:
         """Extract resume data using OpenAI GPT"""
         if not self.is_available():
-            self.logger.error("OpenAI client not available")
-            return self._get_fallback_data(resume_text)
+            raise ValueError("OpenAI API key not available. Please set OPENAI_API_KEY environment variable or provide a custom API key.")
         
         try:
             prompt = self._create_resume_prompt(resume_text)
@@ -113,4 +112,4 @@ class OpenAILLMProvider(BaseLLMProvider):
         
         except Exception as e:
             self.logger.error(f"OpenAI extraction failed: {e}")
-            return self._get_fallback_data(resume_text)
+            raise ValueError(f"OpenAI API error: {str(e)}")

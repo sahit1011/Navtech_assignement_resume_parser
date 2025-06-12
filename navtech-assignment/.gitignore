@@ -1,5 +1,5 @@
-# Environment variables - .env is included for recruiter testing
-# .env (commented out to allow commit for recruiter access)
+# Environment variables - NEVER commit .env files with real API keys
+.env
 !.env.example
 
 # Python

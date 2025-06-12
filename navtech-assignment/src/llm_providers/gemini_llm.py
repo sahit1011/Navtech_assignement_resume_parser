@@ -50,8 +50,7 @@ class GeminiLLMProvider(BaseLLMProvider):
     def extract_resume_data(self, resume_text: str, pdf_path: str = None) -> ResumeData:
         """Extract resume data using Gemini"""
         if not self.is_available():
-            self.logger.error("Gemini model not available")
-            return self._get_fallback_data(resume_text)
+            raise ValueError("Gemini API key not available. Please set GEMINI_API_KEY environment variable or provide a custom API key.")
         
         try:
             prompt = self._create_resume_prompt(resume_text)
@@ -112,4 +111,4 @@ class GeminiLLMProvider(BaseLLMProvider):
         
         except Exception as e:
             self.logger.error(f"Gemini extraction failed: {e}")
-            return self._get_fallback_data(resume_text)
+            raise ValueError(f"Gemini API error: {str(e)}")
