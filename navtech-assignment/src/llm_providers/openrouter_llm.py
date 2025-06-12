@@ -20,7 +20,7 @@ class OpenRouterLLMProvider(BaseLLMProvider):
         default_config = {
             "model": "deepseek/deepseek-r1-0528-qwen3-8b:free",
             "temperature": 0.1,
-            "max_tokens": 4000
+            "max_tokens": 6000
         }
         super().__init__(config or default_config)
         self.api_key = os.getenv('OPENROUTER_API_KEY')
@@ -79,7 +79,9 @@ class OpenRouterLLMProvider(BaseLLMProvider):
             
             content = response_data['choices'][0]['message']['content']
             self.logger.info("Received response from OpenRouter")
-            
+            self.logger.debug(f"Full response content length: {len(content)}")
+            self.logger.debug(f"Full response content: {content}")
+
             # Parse JSON response
             data = self._parse_json_response(content)
             

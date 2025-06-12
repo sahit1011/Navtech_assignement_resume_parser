@@ -54,22 +54,82 @@ class BaseLLMProvider(ABC):
         # Remove markdown code blocks
         response_text = re.sub(r'```json\s*', '', response_text)
         response_text = re.sub(r'```\s*$', '', response_text)
-        
-        # Find JSON object
+        response_text = re.sub(r'```', '', response_text)
+
+        # Remove any text before the first {
+        start_idx = response_text.find('{')
+        if start_idx != -1:
+            response_text = response_text[start_idx:]
+
+        # Remove any text after the last }
+        end_idx = response_text.rfind('}')
+        if end_idx != -1:
+            response_text = response_text[:end_idx + 1]
+
+        # Find JSON object with better regex
         json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
         if json_match:
-            return json_match.group(0)
-        
+            json_str = json_match.group(0)
+
+            # Additional cleaning for common issues
+            # Remove trailing commas before closing braces/brackets
+            json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
+
+            # Fix common quote issues
+            json_str = re.sub(r'([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:', r'\1"\2":', json_str)
+
+            return json_str
+
         return response_text.strip()
     
     def _parse_json_response(self, response_text: str) -> Dict[str, Any]:
         """Parse JSON response from LLM"""
         try:
             cleaned_response = self._clean_json_response(response_text)
+            self.logger.debug(f"Cleaned JSON: {cleaned_response[:500]}...")
             return json.loads(cleaned_response)
         except json.JSONDecodeError as e:
             self.logger.error(f"Failed to parse JSON response: {e}")
-            self.logger.debug(f"Response text: {response_text}")
+            self.logger.error(f"Raw response text (first 1000 chars): {response_text[:1000]}")
+            self.logger.error(f"Cleaned response (first 1000 chars): {self._clean_json_response(response_text)[:1000]}")
+
+            # Try to fix truncated JSON
+            try:
+                cleaned = self._clean_json_response(response_text)
+
+                # If JSON is truncated, try to complete it
+                if not cleaned.endswith('}'):
+                    # Count open braces vs close braces
+                    open_braces = cleaned.count('{')
+                    close_braces = cleaned.count('}')
+
+                    # Add missing closing braces
+                    missing_braces = open_braces - close_braces
+                    if missing_braces > 0:
+                        cleaned += '}' * missing_braces
+                        self.logger.info(f"Added {missing_braces} closing braces to complete JSON")
+                        return json.loads(cleaned)
+
+                # Try to extract just the first complete JSON object
+                brace_count = 0
+                end_pos = 0
+                for i, char in enumerate(cleaned):
+                    if char == '{':
+                        brace_count += 1
+                    elif char == '}':
+                        brace_count -= 1
+                        if brace_count == 0:
+                            end_pos = i + 1
+                            break
+
+                if end_pos > 0:
+                    complete_json = cleaned[:end_pos]
+                    self.logger.info(f"Extracted complete JSON object: {complete_json[:200]}...")
+                    return json.loads(complete_json)
+
+            except Exception as fix_e:
+                self.logger.error(f"JSON fixing attempt failed: {fix_e}")
+
             return {}
     
     def _get_fallback_data(self, resume_text: str) -> ResumeData:
