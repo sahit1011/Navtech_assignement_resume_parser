@@ -1,0 +1,45 @@
+Vijay Pagare
+Software Engineer - Frontend
+Email: vijay.pagare@gmail.com
+Phone: +91889XXXXX28
+Address: Thane, MH, India
+
+PROFESSIONAL SUMMARY
+A frontend-leaning software engineer with 4.5+ years of experience in building and maintaining high-quality SaaS products and web applications. Proven ability to work independently and as part of a team in fast-moving environments. Excellent problem-solver with an aptitude for troubleshooting and the ability to quickly master new skills. Currently working as a Software Engineer - Frontend at PROPELLOR.AI. Previously worked as a Software Engineer - Founder at ERAGAP VENTURES and as a Software Engineer - Frontend at FLEXILOANS. Also, founded and worked as a Lecturer at LUMINAIRE ACADEMY.
+
+TECHNICAL SKILLS
+• JavaScript, TypeScript
+• React, NextJS, Angular 2+
+• TailwindCSS, HTML, CSS/SCSS
+• Git, REST APIs using Node.js
+• Linux, Material & Ant Design
+• ES6, Redux, RxJS
+• Apache ECharts, D3.js, Three.js
+• Sockets, PWA
+
+EDUCATION HISTORY
+Bachelor of Engineering - Computers
+Rajiv Gandhi Institute of Technology
+2015 - 2019
+
+WORK EXPERIENCE
+
+Software Engineer - Frontend
+PROPELLOR.AI
+08-01-2021 to 12-12-2023
+Architected, built and maintained business critical modules for a data unification and visualization platform. Introduced 20+ charts including sankey, wordcloud, heatmap, tree, bubble, Map - India and USA, with a few custom bar charts & tables. Built them using SVG, Canvas, and Open-source libraries like Apache Echarts, d3, ng-zorro, and ag-grid. Developed 10+ data sources by integrating 3rd party APIs from facebook, google, shopify, snapchat, etc. Built data connectors using forms and oAuth2 based approaches. Implemented features: ticketing system, billing service, user management, rich-text-editor enabled notes, admin panel, RBACs & Tier-Based User Restriction Service, chart alerts, dashboard and charting related - page & group filters, external share, save as pdf, slideshow mode. Stabilised the app by reducing the bugs by 90% within a quarter of joining and thereon maintained a <5% bug-to-new-feature ratio.
+
+Software Engineer - Founder
+ERAGAP VENTURES
+2019 to 08-01-2021
+Indie-hacked a portfolio of products and services as a solopreneur. Mostly worked on web-based SaaS tools, media initiatives, and client projects. Made multiple pivots: ecom, crypto, and content. Built ecom apps for a jewellery store and a paper florist using React/NextJS, TailwindCSS, Javascript, and Vercel. Developed a web app that provided legal documents service (wills & codicils). Built an SEO-rich blog app for creators that converted .md files to blog posts. Built a content automation platform (app + website) to help creators and marketers automate social media posts.
+
+Software Engineer - Frontend
+FLEXILOANS
+06-01-2019 to 2021
+Built a dynamic client onboarding and lead generation platform (JSON-based) that tailored itself to various user journeys depending upon the source of the lead and was integrated with Flexiloans' business partners like Gpay, Paypal, and Xiaomi. It was used by 6 lac SMEs per month. Awarded Employee of the Month twice. Features: KYC flow, Loans Profile Section, E-Nach/Ops flow.
+
+Lecturer - Founder
+LUMINAIRE ACADEMY
+01-01-2015 to 01-01-2019
+Bootstrapped an offline coaching institute during my college days. ARR: 15 lac. Roles: Teaching (physics), guest lecturing at other partner institutes (5+), mentoring Prime decision-making, marketing and revenue generation.

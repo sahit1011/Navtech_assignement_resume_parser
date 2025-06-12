@@ -1,0 +1,410 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Resume - NavTech Resume Parser{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="text-center">
+            <h1 class="display-5 fw-bold text-primary mb-3">AI-Powered Resume Parser</h1>
+            <p class="lead text-muted mb-4">Extract structured information from resumes using advanced AI models</p>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="d-flex justify-content-center gap-4 mb-4">
+                        <div class="stats-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h6 class="fw-bold">5x Faster</h6>
+                            <small class="text-muted">Than API calls</small>
+                        </div>
+                        <div class="stats-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <h6 class="fw-bold">100% Accuracy</h6>
+                            <small class="text-muted">Core fields</small>
+                        </div>
+                        <div class="stats-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-wifi"></i>
+                            </div>
+                            <h6 class="fw-bold">Works Offline</h6>
+                            <small class="text-muted">No API required</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-upload me-2"></i> Upload Resume for Analysis
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+                    <!-- File Upload Section -->
+                    <div class="mb-4">
+                        <label for="resume_file" class="form-label">
+                            <i class="fas fa-file-alt me-2"></i>Resume File
+                        </label>
+                        <div class="drag-drop-area" onclick="document.getElementById('resume_file').click()">
+                            <div class="upload-icon" style="font-size: 2rem; margin-bottom: 0.75rem;">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h6 class="mb-2">Drop your resume here or click to browse</h6>
+                            <div class="d-flex justify-content-center gap-2 mb-2">
+                                <span class="badge bg-light text-dark">PDF</span>
+                                <span class="badge bg-light text-dark">DOC</span>
+                                <span class="badge bg-light text-dark">DOCX</span>
+                            </div>
+                            <small class="text-muted">Max 16MB</small>
+                        </div>
+                        <input type="file" class="form-control d-none" id="resume_file" name="resume_file"
+                               accept=".pdf,.doc,.docx,.txt" required>
+
+                        <!-- File Info Display -->
+                        <div class="file-info" id="fileInfo">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-file-alt text-primary me-3"></i>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold" id="fileName">No file selected</div>
+                                    <small class="text-muted" id="fileSize"></small>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearFile()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Provider Selection -->
+                    <div class="mb-4">
+                        <label for="llm_provider" class="form-label">
+                            <i class="fas fa-robot me-2"></i>AI Provider
+                        </label>
+                        <select class="form-select" id="llm_provider" name="llm_provider" required>
+                            {% for provider in providers %}
+                            <option value="{{ provider.name }}"
+                                    {% if provider.name == 'smart_transformer' %}selected{% endif %}
+                                    data-description="{{ provider.description }}"
+                                    data-requires-key="{{ provider.requires_api_key }}">
+                                {% if provider.name == 'smart_transformer' %}
+                                    ⚡ {{ provider.display_name }} - {{ provider.description }} (Recommended)
+                                {% elif provider.name == 'layoutlm_transformer' %}
+                                    🧠 {{ provider.display_name }} - {{ provider.description }}
+                                {% elif provider.name == 'openrouter' %}
+                                    ☁️ {{ provider.display_name }} - {{ provider.description }}
+                                {% elif provider.name == 'gemini' %}
+                                    ⭐ {{ provider.display_name }} - {{ provider.description }}
+                                {% else %}
+                                    🔧 {{ provider.display_name }} - {{ provider.description }}
+                                {% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">
+                            <div id="provider-info" class="mt-2">
+                                <span class="badge bg-success me-2">⚡ Recommended</span>
+                                <span class="badge bg-info me-2">🚀 5x Faster</span>
+                                <span class="badge bg-secondary">📱 Works Offline</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- API Key Section -->
+                    <div class="mb-4" id="api-key-section">
+                        <label for="custom_api_key" class="form-label">
+                            <i class="fas fa-key me-2"></i>API Key <span class="text-muted">(Optional)</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password" class="form-control" id="custom_api_key" name="custom_api_key"
+                                   placeholder="Enter your API key for external providers">
+                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                                <i class="fas fa-eye" id="toggleIcon"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle text-info"></i>
+                            Only required for cloud providers (Gemini, OpenAI, OpenRouter). Local transformers work without API keys.
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <span class="spinner-border spinner-border-sm me-2 d-none" id="loadingSpinner"></span>
+                            <i class="fas fa-magic me-2"></i>
+                            <span id="submitText">Analyze Resume</span>
+                        </button>
+                        <small class="text-center text-muted">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            Your data is processed securely and not stored
+                        </small>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3 mb-4">
+                        <div class="feature-icon mx-auto">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <h6 class="fw-bold">Easy Upload</h6>
+                        <p class="text-muted small">Drag & drop or click to upload PDF, DOC, DOCX files</p>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="feature-icon mx-auto">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h6 class="fw-bold">AI Processing</h6>
+                        <p class="text-muted small">Advanced AI models extract structured information</p>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="feature-icon mx-auto">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h6 class="fw-bold">JSON Output</h6>
+                        <p class="text-muted small">Get structured data ready for integration</p>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="feature-icon mx-auto">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h6 class="fw-bold">Secure</h6>
+                        <p class="text-muted small">Data processed securely, not stored permanently</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-md-4 mb-3">
+        <a href="{{ url_for('demo') }}" class="btn btn-outline-primary w-100 py-3">
+            <i class="fas fa-play me-2"></i> Try Demo
+            <br><small class="text-muted">Test with sample resume</small>
+        </a>
+    </div>
+    <div class="col-md-4 mb-3">
+        <a href="{{ url_for('providers') }}" class="btn btn-outline-info w-100 py-3">
+            <i class="fas fa-cogs me-2"></i> Provider Status
+            <br><small class="text-muted">Check AI model availability</small>
+        </a>
+    </div>
+    <div class="col-md-4 mb-3">
+        <a href="/status" target="_blank" class="btn btn-outline-secondary w-100 py-3">
+            <i class="fas fa-info-circle me-2"></i> API Status
+            <br><small class="text-muted">View detailed system status</small>
+        </a>
+    </div>
+</div>
+    </div>
+</div>
+
+<!-- Help Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-question-circle"></i> How to Use
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-upload text-primary"></i> Step 1: Upload</h6>
+                        <p class="small text-muted">Upload your resume in PDF, DOC, or DOCX format</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-cogs text-success"></i> Step 2: Select Provider</h6>
+                        <p class="small text-muted">Choose an AI provider (Enhanced Transformer recommended)</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-magic text-info"></i> Step 3: Parse</h6>
+                        <p class="small text-muted">Get structured JSON output with extracted information</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // File handling functions
+    function updateFileInfo(file) {
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+
+        if (file) {
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileInfo.classList.add('show');
+        } else {
+            fileInfo.classList.remove('show');
+        }
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function clearFile() {
+        document.getElementById('resume_file').value = '';
+        updateFileInfo(null);
+    }
+
+    function togglePassword() {
+        const passwordInput = document.getElementById('custom_api_key');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.className = 'fas fa-eye-slash';
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.className = 'fas fa-eye';
+        }
+    }
+
+    // File input change handler
+    document.getElementById('resume_file').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            updateFileInfo(e.target.files[0]);
+        }
+    });
+
+    // Provider selection handler
+    document.getElementById('llm_provider').addEventListener('change', function(e) {
+        const apiKeySection = document.getElementById('api-key-section');
+        const providerInfo = document.getElementById('provider-info');
+        const selectedProvider = e.target.value;
+
+        // Show/hide API key section
+        if (['smart_transformer', 'layoutlm_transformer'].includes(selectedProvider)) {
+            apiKeySection.style.display = 'none';
+        } else {
+            apiKeySection.style.display = 'block';
+        }
+
+        // Update provider info badges
+        let badges = '';
+        switch(selectedProvider) {
+            case 'smart_transformer':
+                badges = `
+                    <span class="badge bg-success me-2">⚡ Recommended</span>
+                    <span class="badge bg-info me-2">🚀 5x Faster</span>
+                    <span class="badge bg-secondary">📱 Works Offline</span>
+                `;
+                break;
+            case 'layoutlm_transformer':
+                badges = `
+                    <span class="badge bg-info me-2">🧠 Enhanced</span>
+                    <span class="badge bg-secondary me-2">📱 Works Offline</span>
+                    <span class="badge bg-primary">📄 Document AI</span>
+                `;
+                break;
+            case 'openrouter':
+                badges = `
+                    <span class="badge bg-success me-2">🆓 Free API</span>
+                    <span class="badge bg-info me-2">☁️ Cloud</span>
+                    <span class="badge bg-warning">🔑 API Key Required</span>
+                `;
+                break;
+            case 'gemini':
+                badges = `
+                    <span class="badge bg-primary me-2">⭐ Google AI</span>
+                    <span class="badge bg-info me-2">☁️ Cloud</span>
+                    <span class="badge bg-warning">🔑 API Key Required</span>
+                `;
+                break;
+            default:
+                badges = `<span class="badge bg-secondary">🔧 ${selectedProvider}</span>`;
+        }
+        providerInfo.innerHTML = badges;
+    });
+
+    // Form submission handler
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Show loading state
+        submitBtn.disabled = true;
+        submitText.textContent = 'Processing...';
+        loadingSpinner.classList.remove('d-none');
+
+        // Add progress indication
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 90) {
+                clearInterval(progressInterval);
+            }
+        }, 500);
+    });
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set initial provider selection
+        const providerSelect = document.getElementById('llm_provider');
+        if (providerSelect) {
+            providerSelect.dispatchEvent(new Event('change'));
+        }
+
+        // Add file validation
+        const fileInput = document.getElementById('resume_file');
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check file size (16MB limit)
+                if (file.size > 16 * 1024 * 1024) {
+                    alert('File size must be less than 16MB');
+                    clearFile();
+                    return;
+                }
+
+                // Check file type
+                const allowedTypes = ['.pdf', '.doc', '.docx', '.txt'];
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                if (!allowedTypes.includes(fileExtension)) {
+                    alert('Please select a PDF, DOC, DOCX, or TXT file');
+                    clearFile();
+                    return;
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

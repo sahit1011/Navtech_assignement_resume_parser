@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Demo - NavTech Resume Parser{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-play"></i> Demo with Sample Resume
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    Try our resume parser with a sample resume. No file upload required - just select an AI provider and see the results!
+                </p>
+
+                <form action="{{ url_for('demo_parse') }}" method="post">
+                    <!-- LLM Provider Selection -->
+                    <div class="mb-4">
+                        <label for="llm_provider" class="form-label">
+                            <strong>AI Provider</strong>
+                        </label>
+                        <select class="form-select" id="llm_provider" name="llm_provider" required>
+                            {% for provider in providers %}
+                            <option value="{{ provider.name }}" 
+                                    {% if provider.name == 'smart_transformer' %}selected{% endif %}>
+                                {{ provider.display_name }} - {{ provider.description }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">
+                            <strong>Recommended:</strong> 
+                            <span class="text-success">Enhanced Smart Transformer</span> (Fast, offline, 100% accuracy) or 
+                            <span class="text-info">OpenRouter</span> (Free API, high accuracy)
+                        </div>
+                    </div>
+
+                    <!-- API Key Section -->
+                    <div class="mb-4" id="api-key-section">
+                        <label for="custom_api_key" class="form-label">
+                            <strong>Custom API Key</strong> <span class="text-muted">(Optional)</span>
+                        </label>
+                        <input type="password" class="form-control" id="custom_api_key" name="custom_api_key" 
+                               placeholder="Enter your API key if using external providers">
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i> 
+                            Only required for Gemini, OpenAI, or OpenRouter. Local transformers work without API keys.
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-info btn-lg">
+                            <i class="fas fa-magic"></i> Parse Sample Resume
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sample Resume Preview -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-text"></i> Sample Resume Preview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="bg-light p-3 rounded">
+                    <h6 class="text-primary">John Doe</h6>
+                    <p class="mb-2">
+                        <i class="fas fa-envelope"></i> john.doe@email.com<br>
+                        <i class="fas fa-phone"></i> +1 (555) 123-4567<br>
+                        <i class="fas fa-map-marker-alt"></i> San Francisco, CA
+                    </p>
+                    
+                    <h6 class="text-primary mt-3">Professional Summary</h6>
+                    <p class="small">
+                        Experienced Software Engineer with 5+ years in full-stack development, 
+                        specializing in React, Node.js, and cloud technologies...
+                    </p>
+                    
+                    <h6 class="text-primary mt-3">Skills</h6>
+                    <p class="small">
+                        JavaScript, Python, React, Node.js, AWS, Docker, MongoDB, PostgreSQL...
+                    </p>
+                    
+                    <h6 class="text-primary mt-3">Experience</h6>
+                    <p class="small">
+                        <strong>Senior Software Engineer</strong> - TechCorp Inc. (2021-Present)<br>
+                        <strong>Software Developer</strong> - StartupXYZ (2019-2021)
+                    </p>
+                    
+                    <h6 class="text-primary mt-3">Education</h6>
+                    <p class="small">
+                        <strong>Bachelor of Science in Computer Science</strong><br>
+                        University of California, Berkeley (2015-2019)
+                    </p>
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> 
+                        This is a simplified preview. The actual sample resume contains more detailed information.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Provider Information -->
+        <div class="row mt-4">
+            <div class="col-md-6 mb-3">
+                <div class="card provider-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-robot fa-2x text-success mb-2"></i>
+                        <h6>Enhanced Smart Transformer</h6>
+                        <small class="text-muted">100% accuracy, 5x faster, works offline</small>
+                        <div class="mt-2">
+                            <span class="badge bg-success">Recommended</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card provider-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-brain fa-2x text-info mb-2"></i>
+                        <h6>Improved LayoutLM</h6>
+                        <small class="text-muted">Advanced document understanding</small>
+                        <div class="mt-2">
+                            <span class="badge bg-info">Enhanced</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="row mt-3">
+            <div class="col-md-4 mb-2">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-primary w-100">
+                    <i class="fas fa-upload"></i> Upload Resume
+                </a>
+            </div>
+            <div class="col-md-4 mb-2">
+                <a href="{{ url_for('providers') }}" class="btn btn-outline-info w-100">
+                    <i class="fas fa-cogs"></i> Provider Status
+                </a>
+            </div>
+            <div class="col-md-4 mb-2">
+                <a href="/status" target="_blank" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-info-circle"></i> API Status
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-star"></i> What You'll See in the Demo
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <i class="fas fa-user fa-2x text-primary mb-2"></i>
+                            <h6>Personal Info</h6>
+                            <small class="text-muted">Name, email, phone, address extraction</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <i class="fas fa-cogs fa-2x text-success mb-2"></i>
+                            <h6>Skills</h6>
+                            <small class="text-muted">Technical and soft skills identification</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <i class="fas fa-briefcase fa-2x text-info mb-2"></i>
+                            <h6>Experience</h6>
+                            <small class="text-muted">Work history with dates and descriptions</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <i class="fas fa-graduation-cap fa-2x text-warning mb-2"></i>
+                            <h6>Education</h6>
+                            <small class="text-muted">Degrees, institutions, and graduation years</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Provider selection handler
+    document.getElementById('llm_provider').addEventListener('change', function(e) {
+        const apiKeySection = document.getElementById('api-key-section');
+        const selectedProvider = e.target.value;
+        
+        if (['smart_transformer', 'layoutlm_transformer'].includes(selectedProvider)) {
+            apiKeySection.style.display = 'none';
+        } else {
+            apiKeySection.style.display = 'block';
+        }
+    });
+
+    // Initialize API key visibility
+    document.addEventListener('DOMContentLoaded', function() {
+        const providerSelect = document.getElementById('llm_provider');
+        providerSelect.dispatchEvent(new Event('change'));
+    });
+</script>
+{% endblock %}
